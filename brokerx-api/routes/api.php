@@ -76,6 +76,9 @@ Route::get(
     [UserPaymentMethodController::class, 'index']
 );
 
+Route::middleware('auth:sanctum')->get('/exchange-rates', [ExchangeRateController::class, 'index']);
+
+
 Route::get(
     '/payment-accounts',
     [UserPaymentAccountController::class, 'index']
