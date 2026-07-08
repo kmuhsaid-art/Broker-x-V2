@@ -12,6 +12,7 @@ use App\Http\Controllers\API\PaymentMethodController as UserPaymentMethodControl
 use App\Http\Controllers\API\WalletController;
 
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\ExchangeRateController;
 
 use App\Http\Controllers\API\Admin\DepositController as AdminDepositController;
 use App\Http\Controllers\API\Admin\PaymentAccountController as AdminPaymentAccountController;
