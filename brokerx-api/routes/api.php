@@ -11,6 +11,8 @@ use App\Http\Controllers\API\PaymentAccountController as UserPaymentAccountContr
 use App\Http\Controllers\API\PaymentMethodController as UserPaymentMethodController;
 use App\Http\Controllers\API\WalletController;
 
+use App\Http\Controllers\API\UserController;
+
 use App\Http\Controllers\API\Admin\DepositController as AdminDepositController;
 use App\Http\Controllers\API\Admin\PaymentAccountController as AdminPaymentAccountController;
 use App\Http\Controllers\API\Admin\PaymentMethodController as AdminPaymentMethodController;
@@ -84,6 +86,7 @@ Route::get(
     [UserPaymentAccountController::class, 'index']
 );
 
+Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'profile']);
 /*
 |--------------------------------------------------------------------------
 | Admin
