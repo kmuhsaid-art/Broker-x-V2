@@ -555,6 +555,21 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json([]);
     });
 
+    // ... route POST yang sudah ada biarkan saja ...
+
+// TAMBAHKAN ROUTE GET INI DI BAGIAN BAWAH:
+Route::middleware('auth:sanctum')->get('/orders', function () {
+    return response()->json([]); // Return array kosong dulu sebagai placeholder
+});
+
+Route::middleware('auth:sanctum')->get('/positions', function () {
+    return response()->json([]);
+});
+
+Route::middleware('auth:sanctum')->get('/trades', function () {
+    return response()->json([]);
+});
+
     // Pastikan route exchange-rates juga ada (dari troubleshooting sebelumnya)
     Route::get('/exchange-rates', [App\Http\Controllers\API\ExchangeRateController::class, 'index']);
 });
