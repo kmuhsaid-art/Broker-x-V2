@@ -15,15 +15,12 @@ class PaymentMethod extends Model
         'name',
         'code',
         'type',
-        'logo',
-        'deposit_enabled',
-        'withdraw_enabled',
+        'currency',      // ✅ Ditambahkan (sesuai migration)
+        'icon',          // ✅ Ditambahkan (sesuai migration, menggantikan 'logo')
         'is_active',
     ];
 
     protected $casts = [
-        'deposit_enabled' => 'boolean',
-        'withdraw_enabled' => 'boolean',
         'is_active' => 'boolean',
     ];
 
