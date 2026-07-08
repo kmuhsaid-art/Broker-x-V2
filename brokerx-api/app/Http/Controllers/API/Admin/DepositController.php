@@ -31,26 +31,71 @@ class DepositController extends Controller
     }
 
     public function approve(Request $request, Deposit $deposit)
-    {
-        if ($deposit->status !== 'PENDING') {
-            return response()->json([
-                'message' => 'Deposit already processed.'
-            ], 422);
-        }
-
-        $deposit->update([
-            'status' => 'APPROVED',
-            'approved_by' => $request->user()->id,
-            'approved_at' => now(),
-            'admin_notes' => $request->admin_notes,
-        ]);
-
+{
+    if ($deposit->status !== 'PENDING') {
         return response()->json([
-            'success' => true,
-            'message' => 'Deposit approved.',
-            'data' => $deposit
-        ]);
+            'message' => 'Deposit already processed.'
+        ], 422);
     }
+
+    // 1. Update status deposit
+    $deposit->update([
+        'status' => 'SUCCESS', // Ubah dari APPROVED ke SUCCESS
+        'approved_by' => $request->user()->id,
+        'approved_at' => now(),
+        'admin_notes' => $request->admin_notes,
+    ]);
+
+    // 2. TAMBAHKAN SALDO KE WALLET USER
+    $wallet = \App\Models\Wallet::find($deposit->wallet_id);
+    if ($wallet) {
+        $wallet->balance += $deposit->amount;
+        $wallet->save();
+    } else {
+        return response()->json([
+            'message' => 'Wallet not found for this deposit.'
+        ], 404);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Deposit approved and balance updated.',
+        'data' => $deposit->load(['wallet', 'user'])
+    ]);
+}
+ public function approve(Request $request, Deposit $deposit)
+{
+    if ($deposit->status !== 'PENDING') {
+        return response()->json([
+            'message' => 'Deposit already processed.'
+        ], 422);
+    }
+
+    // 1. Update status deposit
+    $deposit->update([
+        'status' => 'SUCCESS', // Ubah dari APPROVED ke SUCCESS
+        'approved_by' => $request->user()->id,
+        'approved_at' => now(),
+        'admin_notes' => $request->admin_notes,
+    ]);
+
+    // 2. TAMBAHKAN SALDO KE WALLET USER
+    $wallet = \App\Models\Wallet::find($deposit->wallet_id);
+    if ($wallet) {
+        $wallet->balance += $deposit->amount;
+        $wallet->save();
+    } else {
+        return response()->json([
+            'message' => 'Wallet not found for this deposit.'
+        ], 404);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Deposit approved and balance updated.',
+        'data' => $deposit->load(['wallet', 'user'])
+    ]);
+}
 
     public function reject(Request $request, Deposit $deposit)
     {
