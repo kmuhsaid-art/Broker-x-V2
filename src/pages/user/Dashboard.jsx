@@ -12,16 +12,24 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
 
   // Fungsi format currency dinamis berdasarkan tipe mata uang
-  const formatCurrency = (amount, currency) => {
+  const formatCurrency = (amount, currency = 'USD') => {
+    if (!amount && amount !== 0) return '-';
+    
     const configs = {
-      IDR: { symbol: 'Rp ', locale: 'id-ID', decimals: 0 },
-      USD: { symbol: '$', locale: 'en-US', decimals: 2 },
-      USDT: { symbol: '', locale: 'en-US', decimals: 2, suffix: ' USDT' },
-      BTC: { symbol: '', locale: 'en-US', decimals: 8, suffix: ' BTC' },
-      ETH: { symbol: '', locale: 'en-US', decimals: 6, suffix: ' ETH' },
-      EUR: { symbol: '€', locale: 'de-DE', decimals: 2 },
-      SGD: { symbol: 'S$', locale: 'en-SG', decimals: 2 },
+        IDR: { symbol: 'Rp ', locale: 'id-ID', decimals: 0 },
+        USD: { symbol: '$', locale: 'en-US', decimals: 2 },
+        USDT: { symbol: '', locale: 'en-US', decimals: 2 },
+        BTC: { symbol: '₿', locale: 'en-US', decimals: 8 },
+        ETH: { symbol: 'Ξ', locale: 'en-US', decimals: 6 },
     };
+
+    const config = configs[currency] || configs['USD'];
+    
+    return new Intl.NumberFormat(config.locale, {
+        minimumFractionDigits: config.decimals,
+        maximumFractionDigits: config.decimals,
+    }).format(amount) + (config.symbol === 'Rp ' ? ' ' + config.symbol : config.symbol);
+};
 
     const config = configs[currency] || { symbol: '', locale: 'en-US', decimals: 2 };
     const formatted = new Intl.NumberFormat(config.locale, {
