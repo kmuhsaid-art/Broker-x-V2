@@ -12,7 +12,6 @@ class WalletController extends Controller
         return $request
             ->user()
             ->wallets()
-            ->with('asset')
             ->get();
     }
 }
