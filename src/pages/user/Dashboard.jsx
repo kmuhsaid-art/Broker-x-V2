@@ -45,7 +45,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('brokerx_token');
       
       if (!token) {
         throw new Error('Token tidak ditemukan. Silakan login ulang.');
