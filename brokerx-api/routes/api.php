@@ -535,6 +535,30 @@ Route::prefix('admin')
 
     );
 
+    // Route sementara untuk Dashboard Stats
+// Nanti bisa diganti dengan Controller yang proper setelah fitur trading dibuat
+
+Route::middleware('auth:sanctum')->group(function () {
+    
+    // ... route orders/positions/trades yang sudah ada (POST) biarkan saja ...
+
+    // TAMBAHKAN ROUTE GET INI DI BAWAHNYA:
+    Route::get('/orders', function () {
+        return response()->json([]); // Return array kosong dulu
+    });
+
+    Route::get('/positions', function () {
+        return response()->json([]);
+    });
+
+    Route::get('/trades', function () {
+        return response()->json([]);
+    });
+
+    // Pastikan route exchange-rates juga ada (dari troubleshooting sebelumnya)
+    Route::get('/exchange-rates', [App\Http\Controllers\API\ExchangeRateController::class, 'index']);
+});
+
 });
 
 });
