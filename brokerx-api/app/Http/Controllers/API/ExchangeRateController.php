@@ -9,9 +9,8 @@ class ExchangeRateController extends Controller
 {
     public function index()
     {
-        // Hardcoded rates (nanti bisa ambil dari API eksternal seperti CoinGecko)
         return response()->json([
-            'IDR' => 0.0000645,  // 1 IDR = 0.0000645 USD
+            'IDR' => 0.0000645,
             'USD' => 1,
             'USDT' => 1,
             'BTC' => 65000,
@@ -21,4 +20,3 @@ class ExchangeRateController extends Controller
         ]);
     }
 }
-
