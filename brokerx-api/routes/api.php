@@ -60,6 +60,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/deposits', [DepositController::class, 'index']);
     Route::post('/deposits', [DepositController::class, 'store']);
     Route::get('/deposits/{deposit}', [DepositController::class, 'show']);
+    
+    // Withdrawal
+    Route::get('/wthdrawals', [WithdrawalController::class, 'index']);
+    Route::post('/wthdrawals', [WithdrawalController::class, 'store']);
 
     // Orders & Trading (Placeholder GET untuk menghindari error 405)
     Route::get('/orders', function () { return response()->json([]); });
