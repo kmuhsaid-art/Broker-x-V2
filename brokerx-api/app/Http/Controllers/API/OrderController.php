@@ -14,8 +14,8 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'symbol' => ['required', 'string'],
-            'side' => ['required', 'in:buy,sell'],
-            'type' => ['required', 'in:market,limit'],
+            'side' => ['required', 'in:BUY,SELL'],
+            'type' => ['required', 'in:MARKET,LIMIT,STOP,STOP_LIMIT'],
             'price' => ['nullable', 'numeric', 'min:0'],
             'quantity' => ['required', 'numeric', 'gt:0'],
         ]);
