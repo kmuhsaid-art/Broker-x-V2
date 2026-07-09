@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\DepositController;
@@ -10,10 +9,8 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\PaymentAccountController as UserPaymentAccountController;
 use App\Http\Controllers\API\PaymentMethodController as UserPaymentMethodController;
 use App\Http\Controllers\API\WalletController;
-
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\ExchangeRateController;
-
 use App\Http\Controllers\API\Admin\DepositController as AdminDepositController;
 use App\Http\Controllers\API\Admin\PaymentAccountController as AdminPaymentAccountController;
 use App\Http\Controllers\API\Admin\PaymentMethodController as AdminPaymentMethodController;
@@ -23,523 +20,107 @@ use App\Http\Controllers\API\Admin\PaymentMethodController as AdminPaymentMethod
 | Public Authentication
 |--------------------------------------------------------------------------
 */
-
 Route::post('/register', [AuthController::class, 'register']);
-
 Route::post('/login', [AuthController::class, 'login']);
 
 /*
 |--------------------------------------------------------------------------
-| Public Market
+| Public Market & Data
 |--------------------------------------------------------------------------
 */
-
 Route::prefix('markets')->group(function () {
-
-    Route::get(
-        '/',
-        [MarketController::class, 'index']
-    );
-
-    Route::get(
-        '/ticker',
-        [MarketController::class, 'ticker']
-    );
-
-    Route::get(
-        '/{symbol}/orderbook',
-        [MarketController::class, 'orderBook']
-    );
-
-    Route::get(
-        '/{symbol}/candles',
-        [MarketController::class, 'candles']
-    );
-
-    Route::get(
-        '/{symbol}',
-        [MarketController::class, 'show']
-    );
-
+    Route::get('/', [MarketController::class, 'index']);
+    Route::get('/ticker', [MarketController::class, 'ticker']);
+    Route::get('/{symbol}/orderbook', [MarketController::class, 'orderBook']);
+    Route::get('/{symbol}/candles', [MarketController::class, 'candles']);
+    Route::get('/{symbol}', [MarketController::class, 'show']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| Public Data
-|--------------------------------------------------------------------------
-*/
-
-Route::get(
-    '/wallets',
-    [WalletController::class, 'index']
-);
-
-Route::get(
-    '/payment-methods',
-    [UserPaymentMethodController::class, 'index']
-);
-
-Route::middleware('auth:sanctum')->get('/exchange-rates', [ExchangeRateController::class, 'index']);
-
-
-Route::get(
-    '/payment-accounts',
-    [UserPaymentAccountController::class, 'index']
-);
-
-Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'profile']);
-/*
-|--------------------------------------------------------------------------
-| Admin
-|--------------------------------------------------------------------------
-*/
-
-Route::apiResource(
-    'admin/payment-methods',
-    AdminPaymentMethodController::class
-);
-
-Route::apiResource(
-    'admin/payment-accounts',
-    AdminPaymentAccountController::class
-);
-
-Route::get(
-    '/admin/deposits',
-    [AdminDepositController::class, 'index']
-);
-
-Route::get(
-    '/admin/deposits/{deposit}',
-    [AdminDepositController::class, 'show']
-);
-
-Route::post(
-    '/admin/deposits/{deposit}/approve',
-    [AdminDepositController::class, 'approve']
-);
-
-Route::post(
-    '/admin/deposits/{deposit}/reject',
-    [AdminDepositController::class, 'reject']
-);
+Route::get('/wallets', [WalletController::class, 'index']);
+Route::get('/payment-methods', [UserPaymentMethodController::class, 'index']);
+Route::get('/payment-accounts', [UserPaymentAccountController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated
+| Authenticated Routes (USER)
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('auth:sanctum')->group(function () {
+    
+    // Profile & Auth
+    Route::get('/profile', [AuthController::class, 'profile']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [UserController::class, 'profile']);
 
-    Route::get(
-        '/profile',
-        [AuthController::class, 'profile']
-    );
+    // Dashboard & Wallets
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/wallets', [WalletController::class, 'index']);
+    
+    // Deposits
+    Route::get('/deposits', [DepositController::class, 'index']);
+    Route::post('/deposits', [DepositController::class, 'store']);
+    Route::get('/deposits/{deposit}', [DepositController::class, 'show']);
 
-    Route::post(
-        '/logout',
-        [AuthController::class, 'logout']
-    );
+    // Orders & Trading (Placeholder GET untuk menghindari error 405)
+    Route::get('/orders', function () { return response()->json([]); });
+    Route::get('/positions', function () { return response()->json([]); });
+    Route::get('/trades', function () { return response()->json([]); });
+    Route::post('/orders', [OrderController::class, 'store']);
 
-    Route::get(
-        '/orders', function () { return response()->json([]); });
-    Route::get(
-        '/positions', function () { return response()->json([]); });
-    Route::get(
-        '/trades', function () { return response()->json([]); });
-
-    Route::get(
-        '/dashboard',
-        [DashboardController::class, 'index']
-    );
-
-    Route::get(
-        '/wallets',
-        [WalletController::class, 'index']
-    );
-
-    Route::get(
-        '/payment-methods',
-        [UserPaymentMethodController::class, 'index']
-    );
-
-    Route::get(
-        '/payment-accounts',
-        [UserPaymentAccountController::class, 'index']
-    );
-
-    Route::get(
-        '/deposits',
-        [DepositController::class, 'index']
-    );
-
-    Route::post(
-        '/deposits',
-        [DepositController::class, 'store']
-    );
-
-    Route::get(
-        '/deposits/{deposit}',
-        [DepositController::class, 'show']
-    );
-
-    Route::post(
-        '/orders',
-        [OrderController::class, 'store']
-    );
-        /*
-|--------------------------------------------------------------------------
-| Investment
-|--------------------------------------------------------------------------
-*/
-
-    Route::get(
-
-        '/investment-products',
-
-        [\App\Http\Controllers\API\InvestmentController::class,'products']
-
-    );
-
-    Route::get(
-
-        '/investment-products/{investmentProduct}',
-
-        [\App\Http\Controllers\API\InvestmentController::class,'showProduct']
-
-    );
-
-    Route::get(
-
-        '/investments',
-
-        [\App\Http\Controllers\API\InvestmentController::class,'index']
-
-    );
-
-    Route::post(
-
-        '/investments',
-
-        [\App\Http\Controllers\API\InvestmentController::class,'store']
-
-    );
-
-    Route::get(
-
-        '/investments/{investmentOrder}',
-
-        [\App\Http\Controllers\API\InvestmentController::class,'show']
-
-    );
+    // Exchange Rates
+    Route::get('/exchange-rates', [ExchangeRateController::class, 'index']);
 
     /*
-|--------------------------------------------------------------------------
-| Investment Products
-|--------------------------------------------------------------------------
-*/
+    |--------------------------------------------------------------------------
+    | USER Investment Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/investment-products', [\App\Http\Controllers\API\InvestmentController::class,'products']);
+    Route::get('/investment-products/{investmentProduct}', [\App\Http\Controllers\API\InvestmentController::class,'showProduct']);
+    
+    Route::get('/investments', [\App\Http\Controllers\API\InvestmentController::class,'myInvestments']);
+    Route::post('/investments', [\App\Http\Controllers\API\InvestmentController::class,'store']);
+    Route::get('/investments/{investmentOrder}', [\App\Http\Controllers\API\InvestmentController::class,'show']);
+    
+    Route::post('/investment-products/{product}/invest', [\App\Http\Controllers\API\InvestmentController::class,'invest']);
+    Route::post('/investments/{investment}/cancel', [\App\Http\Controllers\API\InvestmentController::class,'cancel']);
 
-Route::get(
-
-    '/investment-products',
-
-    [\App\Http\Controllers\API\InvestmentController::class,'index']
-
-);
-
-Route::get(
-
-    '/investment-products/{product}',
-
-    [\App\Http\Controllers\API\InvestmentController::class,'show']
-
-);
+}); // <--- PENUTUP GROUP AUTH:SANCTUM (USER)
 
 /*
 |--------------------------------------------------------------------------
-| User Investments
+| Admin Routes
 |--------------------------------------------------------------------------
 */
-
-Route::get(
-
-    '/investments',
-
-    [\App\Http\Controllers\API\InvestmentController::class,'myInvestments']
-
-);
-
-Route::get(
-
-    '/investments/active',
-
-    [\App\Http\Controllers\API\InvestmentController::class,'active']
-
-);
-
-Route::get(
-
-    '/investments/pending',
-
-    [\App\Http\Controllers\API\InvestmentController::class,'pending']
-
-);
-
-Route::get(
-
-    '/investments/completed',
-
-    [\App\Http\Controllers\API\InvestmentController::class,'completed']
-
-);
-
-Route::get(
-
-    '/investments/{investment}',
-
-    [\App\Http\Controllers\API\InvestmentController::class,'detail']
-
-);
-
-Route::post(
-
-    '/investment-products/{product}/invest',
-
-    [\App\Http\Controllers\API\InvestmentController::class,'invest']
-
-);
-
-Route::post(
-
-    '/investments/{investment}/cancel',
-
-    [\App\Http\Controllers\API\InvestmentController::class,'cancel']
-
-);
-
-/*
-|--------------------------------------------------------------------------
-| Admin Investment
-|--------------------------------------------------------------------------
-*/
-
-Route::prefix('admin')
-
-->middleware([
-
-    'auth:sanctum',
-
-    'admin'
-
-])
-
-->group(function(){
+Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    
+    Route::apiResource('payment-methods', AdminPaymentMethodController::class);
+    Route::apiResource('payment-accounts', AdminPaymentAccountController::class);
+    
+    Route::get('/deposits', [AdminDepositController::class, 'index']);
+    Route::get('/deposits/{deposit}', [AdminDepositController::class, 'show']);
+    Route::post('/deposits/{deposit}/approve', [AdminDepositController::class, 'approve']);
+    Route::post('/deposits/{deposit}/reject', [AdminDepositController::class, 'reject']);
 
     /*
     |--------------------------------------------------------------------------
-    | Category
+    | ADMIN Investment Routes (TERPISAH DARI USER)
     |--------------------------------------------------------------------------
     */
-
-    Route::apiResource(
-
-        'investment-categories',
-
-        \App\Http\Controllers\API\Admin\InvestmentCategoryController::class
-
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | Products
-    |--------------------------------------------------------------------------
-    */
-
-    Route::apiResource(
-
-        'investment-products',
-
-        \App\Http\Controllers\API\Admin\InvestmentProductController::class
-
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | Dashboard
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get(
-
-        '/investments/dashboard',
-
-        [
-
-            \App\Http\Controllers\API\Admin\AdminInvestmentController::class,
-
-            'dashboard'
-
-        ]
-
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | List
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get(
-
-        '/investments',
-
-        [
-
-            \App\Http\Controllers\API\Admin\AdminInvestmentController::class,
-
-            'index'
-
-        ]
-
-    );
-
-    Route::get(
-
-        '/investments/pending',
-
-        [
-
-            \App\Http\Controllers\API\Admin\AdminInvestmentController::class,
-
-            'pending'
-
-        ]
-
-    );
-
-    Route::get(
-
-        '/investments/active',
-
-        [
-
-            \App\Http\Controllers\API\Admin\AdminInvestmentController::class,
-
-            'active'
-
-        ]
-
-    );
-
-    Route::get(
-
-        '/investments/completed',
-
-        [
-
-            \App\Http\Controllers\API\Admin\AdminInvestmentController::class,
-
-            'completed'
-
-        ]
-
-    );
-
-    Route::get(
-
-        '/investments/rejected',
-
-        [
-
-            \App\Http\Controllers\API\Admin\AdminInvestmentController::class,
-
-            'rejected'
-
-        ]
-
-    );
-
-    Route::get(
-
-        '/investments/cancelled',
-
-        [
-
-            \App\Http\Controllers\API\Admin\AdminInvestmentController::class,
-
-            'cancelled'
-
-        ]
-
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | Detail
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get(
-
-        '/investments/{investment}',
-
-        [
-
-            \App\Http\Controllers\API\Admin\AdminInvestmentController::class,
-
-            'show'
-
-        ]
-
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | Actions
-    |--------------------------------------------------------------------------
-    */
-
-    Route::post(
-
-        '/investments/{investment}/approve',
-
-        [
-
-            \App\Http\Controllers\API\Admin\AdminInvestmentController::class,
-
-            'approve'
-
-        ]
-
-    );
-
-    Route::post(
-
-        '/investments/{investment}/reject',
-
-        [
-
-            \App\Http\Controllers\API\Admin\AdminInvestmentController::class,
-
-            'reject'
-
-        ]
-
-    );
-
-    Route::post(
-
-        '/investments/{investment}/complete',
-
-        [
-
-            \App\Http\Controllers\API\Admin\AdminInvestmentController::class,
-
-            'complete'
-
-        ]
-
-    );
-
-});
+    Route::apiResource('investment-categories', \App\Http\Controllers\API\Admin\InvestmentCategoryController::class);
+    Route::apiResource('investment-products', \App\Http\Controllers\API\Admin\InvestmentProductController::class);
+    
+    Route::get('/investments/dashboard', [\App\Http\Controllers\API\Admin\AdminInvestmentController::class, 'dashboard']);
+    Route::get('/investments', [\App\Http\Controllers\API\Admin\AdminInvestmentController::class, 'index']);
+    Route::get('/investments/pending', [\App\Http\Controllers\API\Admin\AdminInvestmentController::class, 'pending']);
+    Route::get('/investments/active', [\App\Http\Controllers\API\Admin\AdminInvestmentController::class, 'active']);
+    Route::get('/investments/completed', [\App\Http\Controllers\API\Admin\AdminInvestmentController::class, 'completed']);
+    Route::get('/investments/rejected', [\App\Http\Controllers\API\Admin\AdminInvestmentController::class, 'rejected']);
+    Route::get('/investments/cancelled', [\App\Http\Controllers\API\Admin\AdminInvestmentController::class, 'cancelled']);
+    Route::get('/investments/{investment}', [\App\Http\Controllers\API\Admin\AdminInvestmentController::class, 'show']);
+    
+    Route::post('/investments/{investment}/approve', [\App\Http\Controllers\API\Admin\AdminInvestmentController::class, 'approve']);
+    Route::post('/investments/{investment}/reject', [\App\Http\Controllers\API\Admin\AdminInvestmentController::class, 'reject']);
+    Route::post('/investments/{investment}/complete', [\App\Http\Controllers\API\Admin\AdminInvestmentController::class, 'complete']);
+
+}); // <--- PENUTUP GROUP ADMIN
