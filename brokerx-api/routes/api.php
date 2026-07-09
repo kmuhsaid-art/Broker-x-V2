@@ -14,7 +14,7 @@ use App\Http\Controllers\API\ExchangeRateController;
 use App\Http\Controllers\API\Admin\DepositController as AdminDepositController;
 use App\Http\Controllers\API\Admin\PaymentAccountController as AdminPaymentAccountController;
 use App\Http\Controllers\API\Admin\PaymentMethodController as AdminPaymentMethodController;
-
+use App\Http\Controllers\API\WithdrawalController;
 /*
 |--------------------------------------------------------------------------
 | Public Authentication
